@@ -1,2 +1,5 @@
+# Composer dependencies
+/vendor/
+
+# Environment variables
 .env
-vendor

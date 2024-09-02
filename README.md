@@ -8,10 +8,10 @@ Om de kwaliteit en leesbaarheid van de code in dit project te waarborgen, volgen
 - Bestandsnamen moeten duidelijk en beschrijvend zijn.
 - Gebruik `kebab-case` voor bestandsnamen (bijvoorbeeld: `my-component.js`).
 - Testbestanden worden benoemd als `<component>.test.js`.
-- Bij Sql bestanden word er snake_case gebruikt
+- Bij Sql bestanden word er `snake_case` gebruikt (bijvoorbeeld: `sql_file.sql`)
 
 ## 2. Code-indeling en -stijl
-- Gebruik **2 spaties** voor inspringing in plaats van tabs.
+- Gebruik Tabs voor inspringing ipv spaties te gebruiken.
 - Sluit altijd een nieuwregel (`\n`) af aan het einde van elk bestand.
 - Houd regels korter dan **80 karakters** waar mogelijk.
 

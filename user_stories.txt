@@ -4,4 +4,3 @@ Als Geregistreerde gebruiker wil ik kunnen inloggen met mijn email en wachtwoord
 Als Gebruiker wil ik mijn profielgegevens (gebruikersnaam, email en wachtwoord) kunnen veranderen zodat het altijd up to date is
 Als Gebruiker wil ik mijn profiel kunnen verwijderen zodat mijn gegevens verwijderd zijn
 Als Gebruiker wil ik een faq pagina kunnen zien die mij verder zou kunnen helpen als ik vast zit
-

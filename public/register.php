@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <?php require_once('includes/head.php'); ?>
+<link rel="stylesheet" href="css/login.css">
 <body>
     <main>
         <form action="backend/backend.php?type=register" method="post">

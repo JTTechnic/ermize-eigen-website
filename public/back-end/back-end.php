@@ -37,8 +37,6 @@ if ($type === 'login') {
     }
 } elseif ($type === 'register') {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        session_start();
-        
         $username = isset($_POST['username']) ? $_POST['username'] : '';
         $email = isset($_POST['email']) ? $_POST['email'] : '';
         $password = isset($_POST['password']) ? $_POST['password'] : '';
@@ -63,7 +61,7 @@ if ($type === 'login') {
                     $_SESSION['user_id'] = $user_id;
                     $_SESSION['username'] = $username;
                     
-                    header("Location: /?message=" . urlencode("Registration succesful, you're now logged in."));
+                    header("Location: /?message=" . urlencode("Registration successful, you're now logged in."));
                     exit();
                 } else {
                     header("Location: /register.php?error=" . urlencode("Error with registration: " . $conn->error));
@@ -102,7 +100,7 @@ if ($type === 'login') {
         }
 
         if ($conn->query($sql) === TRUE) {
-            header("Location: /?message=" . urlencode("Profile is succesfully updated"));
+            header("Location: /?message=" . urlencode("Profile successfully updated"));
             exit();
         } else {
             header("Location: /update.php?error=" . urlencode("Error while updating: " . $conn->error));
@@ -111,8 +109,6 @@ if ($type === 'login') {
     }
 } elseif ($type === 'delete') {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        session_start();
-        
         if (isset($_SESSION['user_id'])) {
             $user_id = $_SESSION['user_id'];
             
@@ -121,14 +117,14 @@ if ($type === 'login') {
                 session_unset();
                 session_destroy();
                 
-                header("Location: /?message=" . urlencode("Profile succesfully deleted. You've been logged out."));
+                header("Location: /?message=" . urlencode("Profile successfully deleted. You've been logged out."));
                 exit();
             } else {
                 header("Location: /update.php?error=" . urlencode("Error while deleting: " . $conn->error));
                 exit();
             }
         } else {
-            header("Location: /login.php?error=" . urlencode("You have to be logged in to delete your profile."));
+            header("Location: /login.php?error=" . urlencode("You need to be logged in to delete your profile."));
             exit();
         }
     }
@@ -148,23 +144,23 @@ if ($type === 'login') {
             if ($conn->query($sql) === TRUE) {
                 $reset_link = "http://localhost/reset-password.php?token=$token";
                 $to = $email;
-                $subject = "Wachtwoord Herstel Verzoek";
-                $message = "Klik op de volgende link om je wachtwoord te herstellen: $reset_link";
+                $subject = "Password Reset Request";
+                $message = "Click the following link to reset your password: $reset_link";
                 $headers = "From: no-reply@example.com";
 
                 if (mail($to, $subject, $message, $headers)) {
-                    header("Location: /login.php?message=" . urlencode("Een e-mail met instructies is verzonden."));
+                    header("Location: /login.php?message=" . urlencode("An email with instructions has been sent."));
                     exit();
                 } else {
-                    header("Location: /login.php?error=" . urlencode("Fout bij het verzenden van de e-mail."));
+                    header("Location: /login.php?error=" . urlencode("Error sending email."));
                     exit();
                 }
             } else {
-                header("Location: /login.php?error=" . urlencode("Fout bij het opslaan van het token: " . $conn->error));
+                header("Location: /login.php?error=" . urlencode("Error saving the token: " . $conn->error));
                 exit();
             }
         } else {
-            header("Location: /login.php?error=" . urlencode("E-mailadres niet gevonden."));
+            header("Location: /login.php?error=" . urlencode("Email address not found."));
             exit();
         }
     }

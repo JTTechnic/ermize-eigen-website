@@ -1,78 +1,74 @@
 <?php
-// backend.php
 
-// Include de database configuratie
-require_once '../../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 
-// Verkrijg de type parameter
 $type = isset($_GET['type']) ? $_GET['type'] : '';
 
 if ($type === 'login') {
-    // Login functionaliteit
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $username = $_POST['username'];
-        $password = $_POST['password'];
+        $email = isset($_POST['email']) ? $_POST['email'] : '';
+        $password = isset($_POST['password']) ? $_POST['password'] : '';
 
-        // Basis SQL-injectie bescherming
-        $username = $conn->real_escape_string($username);
+        $email = $conn->real_escape_string($email);
         $password = $conn->real_escape_string($password);
 
-        // Verkrijg de gebruiker uit de database
-        $sql = "SELECT * FROM users WHERE username='$username'";
+        $sql = "SELECT * FROM users WHERE email='$email'";
         $result = $conn->query($sql);
 
         if ($result->num_rows > 0) {
             $user = $result->fetch_assoc();
-            // Vergelijk de wachtwoorden
             if (password_verify($password, $user['password'])) {
-                echo "Login succesvol";
+                header("Location: index.php?message=" . urlencode("Login succesvol"));
+                exit();
             } else {
-                echo "Ongeldig wachtwoord";
+                header("Location: /public/login.php?error=" . urlencode("Ongeldig wachtwoord"));
+                exit();
             }
         } else {
-            echo "Gebruiker niet gevonden";
+            header("Location: /public/login.php?error=" . urlencode("Gebruiker niet gevonden"));
+            exit();
         }
     }
 } elseif ($type === 'register') {
-    // Registratie functionaliteit
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $username = $_POST['username'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $confirm_password = $_POST['confirm_password'];
+        $username = isset($_POST['username']) ? $_POST['username'] : '';
+        $email = isset($_POST['email']) ? $_POST['email'] : '';
+        $password = isset($_POST['password']) ? $_POST['password'] : '';
+        $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
 
-        // Basis SQL-injectie bescherming
         $username = $conn->real_escape_string($username);
         $email = $conn->real_escape_string($email);
         $password = $conn->real_escape_string($password);
         $confirm_password = $conn->real_escape_string($confirm_password);
 
         if ($password === $confirm_password) {
-            // Controleer of de gebruiker al bestaat
             $sql = "SELECT * FROM users WHERE username='$username'";
             $result = $conn->query($sql);
 
             if ($result->num_rows === 0) {
-                // Versleutel het wachtwoord
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-                // Voeg de gebruiker toe aan de database
                 $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$hashed_password')";
                 if ($conn->query($sql) === TRUE) {
-                    echo "Registratie succesvol";
+                    header("Location: /public/index.php?message=" . urlencode("Registratie succesvol"));
+                    exit();
                 } else {
-                    echo "Fout bij registratie: " . $conn->error;
+                    header("Location: /public/register.php?error=" . urlencode("Fout bij registratie: " . $conn->error));
+                    exit();
                 }
             } else {
-                echo "Gebruiker bestaat al";
+                header("Location: /public/register.php?error=" . urlencode("Gebruiker bestaat al"));
+                exit();
             }
         } else {
-            echo "Wachtwoorden komen niet overeen";
+            header("Location: /public/register.php?error=" . urlencode("Wachtwoorden komen niet overeen"));
+            exit();
         }
     }
 } else {
-    echo "Ongeldig type opgegeven";
+    $redirect_url = ($type === 'register') ? 'register.php' : 'login.php';
+    header("Location: /public/$redirect_url?error=" . urlencode("Ongeldig type opgegeven"));
+    exit();
 }
 
-// Sluit de connectie
 $conn->close();

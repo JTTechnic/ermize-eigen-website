@@ -1,84 +1,42 @@
-body {
+/* Algemene stijlen */
+body, html {
+    margin: 0;
+    padding: 0;
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+}
+
+/* Header stijlen */
+header {
+    display: flex;
+    justify-content: space-between; /* Logo links, navigatie rechts */
+    align-items: center; /* Verticaal centreren van de items */
+    padding: 10px 20px;
+    background-color: #f8f8f8; /* Achtergrondkleur van de header */
+    border-bottom: 1px solid #ccc; /* Eventuele border voor esthetiek */
+}
+
+header .logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+header nav ul {
+    list-style-type: none;
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
 }
 
-.container {
-    width: 100%;
-    max-width: 400px;
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+header nav ul li {
+    margin-left: 20px;
 }
 
-.form-container {
-    text-align: center;
-}
-
-.form-container h1 {
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.form-group {
-    margin-bottom: 15px;
-    text-align: left;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    color: #333;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-button {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    width: 100%;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-.delete-btn {
-    background-color: red;
-}
-
-.delete-btn:hover {
-    background-color: rgb(177, 0, 0);
-} 
-
-p {
-    margin-top: 20px;
-    font-size: 14px;
-}
-
-a {
-    color: #007bff;
+header nav ul li a {
     text-decoration: none;
+    color: #333;
+    font-weight: bold;
 }
 
-a:hover {
-    text-decoration: underline;
+header nav ul li a:hover {
+    color: #007bff; /* Kleur bij hover */
 }

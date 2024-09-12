@@ -6,20 +6,33 @@ body, html {
 }
 
 /* Header stijlen */
-header {
+header, footer {
     display: flex;
     justify-content: space-between; /* Logo links, navigatie rechts */
     align-items: center; /* Verticaal centreren van de items */
     padding: 10px 20px;
-    background-color: #f8f8f8; /* Achtergrondkleur van de header */
+    background-color: #388E3C; /* Achtergrondkleur van de header */
     border-bottom: 1px solid #ccc; /* Eventuele border voor esthetiek */
 }
 
+/* Logo en titel styling */
 header .logo {
-    font-size: 24px;
-    font-weight: bold;
+    display: flex;
+    align-items: center; /* Zorgt ervoor dat het logo en de titel verticaal gecentreerd zijn */
 }
 
+header .logo img {
+    margin-right: 10px; /* Ruimte tussen het logo en de titel */
+}
+
+header .logo h1 {
+    margin: 0; /* Verwijder standaard marges rond h1 */
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff; /* Kleur van de titel */
+}
+
+/* Navigatie stijlen */
 header nav ul {
     list-style-type: none;
     margin: 0;
@@ -33,10 +46,16 @@ header nav ul li {
 
 header nav ul li a {
     text-decoration: none;
-    color: #333;
+    color: #fff; /* Kleur van de navigatielinks */
     font-weight: bold;
 }
 
 header nav ul li a:hover {
     color: #007bff; /* Kleur bij hover */
+}
+
+/* Main sectie stijlen */
+main {
+    padding: 20px; /* Ruimte binnen de main sectie */
+    background-color: #F5F5F5; /* Achtergrondkleur van de main sectie */
 }

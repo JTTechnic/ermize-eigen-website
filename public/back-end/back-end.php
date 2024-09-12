@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 require_once __DIR__ . '/../../config/database.php';
@@ -11,11 +10,11 @@ if ($type === 'login') {
         $email = isset($_POST['email']) ? $_POST['email'] : '';
         $password = isset($_POST['password']) ? $_POST['password'] : '';
 
-        $email = $conn->real_escape_string($email);
-        $password = $conn->real_escape_string($password);
-
-        $sql = "SELECT * FROM users WHERE email='$email'";
-        $result = $conn->query($sql);
+        $sql = "SELECT * FROM users WHERE email = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('s', $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
             $user = $result->fetch_assoc();
@@ -42,25 +41,26 @@ if ($type === 'login') {
         $password = isset($_POST['password']) ? $_POST['password'] : '';
         $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
 
-        $username = $conn->real_escape_string($username);
-        $email = $conn->real_escape_string($email);
-        $password = $conn->real_escape_string($password);
-        $confirm_password = $conn->real_escape_string($confirm_password);
-
         if ($password === $confirm_password) {
-            $sql = "SELECT * FROM users WHERE username='$username'";
-            $result = $conn->query($sql);
+            $sql = "SELECT * FROM users WHERE username = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('s', $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
             if ($result->num_rows === 0) {
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-                $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$hashed_password')";
-                if ($conn->query($sql) === TRUE) {
+                $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param('sss', $username, $email, $hashed_password);
+
+                if ($stmt->execute()) {
                     $user_id = $conn->insert_id;
-                    
+
                     $_SESSION['user_id'] = $user_id;
                     $_SESSION['username'] = $username;
-                    
+
                     header("Location: /?message=" . urlencode("Registration successful, you're now logged in."));
                     exit();
                 } else {
@@ -84,22 +84,23 @@ if ($type === 'login') {
         $password = isset($_POST['password']) ? $_POST['password'] : '';
         $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
 
-        $username = $conn->real_escape_string($username);
-        $email = $conn->real_escape_string($email);
-
         if ($password && $confirm_password) {
             if ($password === $confirm_password) {
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                $sql = "UPDATE users SET username='$username', email='$email', password='$hashed_password' WHERE id='$user_id'";
+                $sql = "UPDATE users SET username = ?, email = ?, password = ? WHERE id = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param('sssi', $username, $email, $hashed_password, $user_id);
             } else {
                 header("Location: /update.php?error=" . urlencode("Passwords do not match"));
                 exit();
             }
         } else {
-            $sql = "UPDATE users SET username='$username', email='$email' WHERE id='$user_id'";
+            $sql = "UPDATE users SET username = ?, email = ? WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('ssi', $username, $email, $user_id);
         }
 
-        if ($conn->query($sql) === TRUE) {
+        if ($stmt->execute()) {
             header("Location: /?message=" . urlencode("Profile successfully updated"));
             exit();
         } else {
@@ -111,12 +112,15 @@ if ($type === 'login') {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_SESSION['user_id'])) {
             $user_id = $_SESSION['user_id'];
-            
-            $sql = "DELETE FROM users WHERE id='$user_id'";
-            if ($conn->query($sql) === TRUE) {
+
+            $sql = "DELETE FROM users WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('i', $user_id);
+
+            if ($stmt->execute()) {
                 session_unset();
                 session_destroy();
-                
+
                 header("Location: /?message=" . urlencode("Profile successfully deleted. You've been logged out."));
                 exit();
             } else {
@@ -132,29 +136,22 @@ if ($type === 'login') {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = isset($_POST['email']) ? $_POST['email'] : '';
 
-        $email = $conn->real_escape_string($email);
-
-        $sql = "SELECT * FROM users WHERE email='$email'";
-        $result = $conn->query($sql);
+        $sql = "SELECT * FROM users WHERE email = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('s', $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
             $token = bin2hex(random_bytes(32));
 
-            $sql = "INSERT INTO password_resets (email, token) VALUES ('$email', '$token')";
-            if ($conn->query($sql) === TRUE) {
-                $reset_link = "http://localhost/reset-password.php?token=$token";
-                $to = $email;
-                $subject = "Password Reset Request";
-                $message = "Click the following link to reset your password: $reset_link";
-                $headers = "From: no-reply@example.com";
+            $sql = "INSERT INTO password_resets (email, token) VALUES (?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('ss', $email, $token);
 
-                if (mail($to, $subject, $message, $headers)) {
-                    header("Location: /login.php?message=" . urlencode("An email with instructions has been sent."));
-                    exit();
-                } else {
-                    header("Location: /login.php?error=" . urlencode("Error sending email."));
-                    exit();
-                }
+            if ($stmt->execute()) {
+                header("Location: /password-reset.php?token=$token");
+                exit();
             } else {
                 header("Location: /login.php?error=" . urlencode("Error saving the token: " . $conn->error));
                 exit();
@@ -171,3 +168,4 @@ if ($type === 'login') {
 }
 
 $conn->close();
+?>
